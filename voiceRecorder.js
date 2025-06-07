@@ -1,16 +1,8 @@
-const {
-  joinVoiceChannel,
-  getVoiceConnection,
-  createAudioResource,
-  EndBehaviorType,
-  VoiceReceiver
-} = require('@discordjs/voice');
+const { joinVoiceChannel, EndBehaviorType } = require('@discordjs/voice');
 
 const fs = require('fs');
-const prism = require('prism-media');
 const ffmpeg = require('fluent-ffmpeg');
-const { createWriteStream } = require('fs');
-const { PassThrough } = require('stream');
+const path = require('path');
 
 function joinAndRecord(channel) {
   const connection = joinVoiceChannel({
@@ -20,6 +12,11 @@ function joinAndRecord(channel) {
   });
 
   const receiver = connection.receiver;
+
+  const recordingsDir = path.join(__dirname, 'recordings');
+  if (!fs.existsSync(recordingsDir)) {
+    fs.mkdirSync(recordingsDir, { recursive: true });
+  }
 
   channel.members.forEach(member => {
     if (member.user.bot) return;
@@ -32,11 +29,10 @@ function joinAndRecord(channel) {
       },
     });
 
-    const outputStream = new PassThrough();
-    const fileName = `./recordings/${userId}-${Date.now()}.pcm`;
+    const fileName = path.join(recordingsDir, `${userId}-${Date.now()}.pcm`);
     const writeStream = fs.createWriteStream(fileName);
 
-    const ffmpegProcess = ffmpeg(audioStream)
+    ffmpeg(audioStream)
       .inputFormat('s16le')
       .audioFrequency(48000)
       .audioChannels(2)
