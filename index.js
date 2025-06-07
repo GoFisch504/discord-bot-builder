@@ -1,9 +1,19 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { joinAndRecord } = require('./voiceRecorder');
+const { joinAndRecord, stopRecording } = require('./voiceRecorder');
 const { transcribeAudio } = require('./transcribe');
 require('dotenv').config();
+
+function requireEnv(name) {
+  if (!process.env[name]) {
+    console.error(`Missing required environment variable ${name}`);
+    process.exit(1);
+  }
+}
+
+requireEnv('DISCORD_TOKEN');
+requireEnv('OPENAI_API_KEY');
 
 const client = new Client({
   intents: [
@@ -27,6 +37,11 @@ client.on('messageCreate', async (message) => {
     }
     joinAndRecord(message.member.voice.channel);
     message.reply('Recording started.');
+  }
+
+  if (message.content === '!stop') {
+    stopRecording();
+    message.reply('Recording stopped.');
   }
 
   if (message.content === '!transcribe') {
