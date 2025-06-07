@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
-const { joinAndRecord } = require('./voiceRecorder');
+const { joinAndRecord, stopRecording } = require('./voiceRecorder');
 const { transcribeAudio } = require('./transcribe');
 require('dotenv').config();
 
@@ -37,6 +37,11 @@ client.on('messageCreate', async (message) => {
     }
     joinAndRecord(message.member.voice.channel);
     message.reply('Recording started.');
+  }
+
+  if (message.content === '!stop') {
+    stopRecording();
+    message.reply('Recording stopped.');
   }
 
   if (message.content === '!transcribe') {

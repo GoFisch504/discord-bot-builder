@@ -8,12 +8,16 @@ if (ffmpegPath) {
 }
 const path = require('path');
 
+let activeConnection = null;
+
 function joinAndRecord(channel) {
   const connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
+
+  activeConnection = connection;
 
   const receiver = connection.receiver;
 
@@ -48,4 +52,11 @@ function joinAndRecord(channel) {
   });
 }
 
-module.exports = { joinAndRecord };
+function stopRecording() {
+  if (activeConnection) {
+    activeConnection.destroy();
+    activeConnection = null;
+  }
+}
+
+module.exports = { joinAndRecord, stopRecording };

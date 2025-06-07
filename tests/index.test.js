@@ -1,5 +1,5 @@
 jest.mock('fs');
-jest.mock('../voiceRecorder', () => ({ joinAndRecord: jest.fn() }));
+jest.mock('../voiceRecorder', () => ({ joinAndRecord: jest.fn(), stopRecording: jest.fn() }));
 jest.mock('../transcribe', () => ({ transcribeAudio: jest.fn().mockResolvedValue('text') }));
 
 jest.mock('discord.js', () => {
@@ -23,11 +23,11 @@ jest.mock('discord.js', () => {
   };
 });
 
-let joinAndRecord, transcribeAudio;
+let joinAndRecord, stopRecording, transcribeAudio;
 let Client, GatewayIntentBits, __mocks, onceMock, onMock, loginMock;
 ({ Client, GatewayIntentBits, __mocks } = require('discord.js'));
 ({ onceMock, onMock, loginMock } = __mocks);
-({ joinAndRecord } = require('../voiceRecorder'));
+({ joinAndRecord, stopRecording } = require('../voiceRecorder'));
 ({ transcribeAudio } = require('../transcribe'));
 
 let fs = require('fs');
@@ -38,7 +38,7 @@ describe('index', () => {
     jest.resetModules();
     ({ Client, GatewayIntentBits, __mocks } = require('discord.js'));
     ({ onceMock, onMock, loginMock } = __mocks);
-    ({ joinAndRecord } = require('../voiceRecorder'));
+    ({ joinAndRecord, stopRecording } = require('../voiceRecorder'));
     ({ transcribeAudio } = require('../transcribe'));
     fs = require('fs');
     jest.clearAllMocks();
@@ -85,6 +85,18 @@ describe('index', () => {
     const expectedPath = path.join(__dirname, '..', 'recordings', 'user-1.wav');
     expect(transcribeAudio).toHaveBeenCalledWith(expectedPath);
     expect(reply).toHaveBeenCalledWith('Transcription: text');
+  });
+
+  test('handles !stop command', async () => {
+    require('../index');
+    const handler = onMock.mock.calls.find(c => c[0] === 'messageCreate')[1];
+    const reply = jest.fn();
+    const msg = { content: '!stop', author: { bot: false }, reply, member: {} };
+
+    await handler(msg);
+
+    expect(stopRecording).toHaveBeenCalled();
+    expect(reply).toHaveBeenCalledWith('Recording stopped.');
   });
 
   test('exits if DISCORD_TOKEN is missing', () => {
