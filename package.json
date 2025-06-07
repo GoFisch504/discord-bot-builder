@@ -1,0 +1,21 @@
+{
+  "name": "discord-bot-builder",
+  "version": "1.0.0",
+  "description": "A Discord bot builder project",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "discord.js": "*",
+    "@discordjs/voice": "*",
+    "prism-media": "*",
+    "ffmpeg-static": "*",
+    "fluent-ffmpeg": "*",
+    "axios": "*"
+  },
+  "devDependencies": {
+    "webpack": "^5.0.0",
+    "webpack-cli": "^5.0.0"
+  }
+}

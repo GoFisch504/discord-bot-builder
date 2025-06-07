@@ -1,13 +1,14 @@
 # discord-bot-builder
 
-This project is a simple Discord bot built with Node.js. Use the setup script to initialize the project and install dependencies.
+This project is a simple Discord bot built with Node.js.
 
 ## Setup
 
-Run the following script from the project root:
+Run the following script from the project root to install all dependencies:
 
 ```sh
 ./setup.sh
 ```
 
-The script creates a `package.json` and installs all required packages.
+The repository includes a `package.json` file, so the script simply runs
+`npm install` (and will create one if it doesn't exist).
