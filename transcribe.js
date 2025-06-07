@@ -12,7 +12,7 @@ async function transcribeAudio(filePath) {
     formData,
     {
       headers: {
-        'Authorization': `Bearer YOUR_OPENAI_API_KEY`,
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         ...formData.getHeaders(),
       },
     }

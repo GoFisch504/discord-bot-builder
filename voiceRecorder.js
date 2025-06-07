@@ -2,6 +2,10 @@ const { joinVoiceChannel, EndBehaviorType } = require('@discordjs/voice');
 
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
+const ffmpegPath = require('ffmpeg-static');
+if (ffmpegPath) {
+  ffmpeg.setFfmpegPath(ffmpegPath);
+}
 const path = require('path');
 
 function joinAndRecord(channel) {
@@ -29,7 +33,7 @@ function joinAndRecord(channel) {
       },
     });
 
-    const fileName = path.join(recordingsDir, `${userId}-${Date.now()}.pcm`);
+    const fileName = path.join(recordingsDir, `${userId}-${Date.now()}.wav`);
     const writeStream = fs.createWriteStream(fileName);
 
     ffmpeg(audioStream)
