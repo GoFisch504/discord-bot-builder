@@ -5,15 +5,15 @@ const { joinAndRecord } = require('./voiceRecorder');
 const { transcribeAudio } = require('./transcribe');
 require('dotenv').config();
 
-if (!process.env.DISCORD_TOKEN) {
-  console.error('DISCORD_TOKEN environment variable is not set');
-  process.exit(1);
+function requireEnv(name) {
+  if (!process.env[name]) {
+    console.error(`Missing required environment variable ${name}`);
+    process.exit(1);
+  }
 }
 
-if (!process.env.OPENAI_API_KEY) {
-  console.error('OPENAI_API_KEY environment variable is not set');
-  process.exit(1);
-}
+requireEnv('DISCORD_TOKEN');
+requireEnv('OPENAI_API_KEY');
 
 const client = new Client({
   intents: [
