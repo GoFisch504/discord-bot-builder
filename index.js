@@ -1,4 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
+require('dotenv').config();
 
 const client = new Client({
   intents: [
@@ -13,4 +14,4 @@ client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
 
-client.login('YMTM3NDYyODE0OTg0MDcxMTc2MQ.GUyjcx.EeuAXIOnu680e40R2_v8lsQhRLxT8ykktTBprI');
+client.login(process.env.DISCORD_TOKEN);
