@@ -4,13 +4,18 @@ This project is a simple Discord bot built with Node.js.
 
 ## Setup
 
-Run the following script from the project root to install all dependencies:
+Run the included setup script to install dependencies:
 
 ```sh
 ./setup.sh
 ```
 
-The repository includes a `package.json` file, so the script simply runs
-`npm install` (and will create one if it doesn't exist).
+The script calls `npm install` (and will create `package.json` if it doesn't exist).
 
-Create a `.env` file (you can copy `.env.example`) and set `DISCORD_TOKEN` to your bot token. The application uses [dotenv](https://github.com/motdotla/dotenv) to load environment variables automatically when `index.js` runs.
+After installing dependencies, copy `.env.example` to `.env` and set your bot token:
+
+```sh
+DISCORD_TOKEN=YOUR_TOKEN_HERE
+```
+
+The app uses [dotenv](https://github.com/motdotla/dotenv) to load environment variables automatically when `index.js` runs.
