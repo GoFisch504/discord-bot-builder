@@ -42,6 +42,8 @@ describe('index', () => {
     ({ transcribeAudio } = require('../transcribe'));
     fs = require('fs');
     jest.clearAllMocks();
+    process.env.DISCORD_TOKEN = 'token';
+    process.env.OPENAI_API_KEY = 'key';
   });
 
   test('initializes discord client', () => {
@@ -96,4 +98,5 @@ describe('index', () => {
     expect(stopRecording).toHaveBeenCalled();
     expect(reply).toHaveBeenCalledWith('Recording stopped.');
   });
+
 });

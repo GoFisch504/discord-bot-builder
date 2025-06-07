@@ -5,6 +5,16 @@ const { joinAndRecord, stopRecording } = require('./voiceRecorder');
 const { transcribeAudio } = require('./transcribe');
 require('dotenv').config();
 
+function requireEnv(name) {
+  if (!process.env[name]) {
+    console.error(`Missing required environment variable ${name}`);
+    process.exit(1);
+  }
+}
+
+requireEnv('DISCORD_TOKEN');
+requireEnv('OPENAI_API_KEY');
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
