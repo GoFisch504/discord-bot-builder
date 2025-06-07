@@ -24,4 +24,14 @@ describe('transcribeAudio', () => {
 
     fs.unlinkSync(file);
   });
+
+  test('throws an error when API request fails', async () => {
+    const file = path.join(__dirname, 'temp.wav');
+    fs.writeFileSync(file, 'data');
+    axios.post.mockRejectedValue(new Error('network'));
+
+    await expect(transcribeAudio(file)).rejects.toThrow('Transcription API request failed');
+
+    fs.unlinkSync(file);
+  });
 });
