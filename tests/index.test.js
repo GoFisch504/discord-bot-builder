@@ -42,6 +42,8 @@ describe('index', () => {
     ({ transcribeAudio } = require('../transcribe'));
     fs = require('fs');
     jest.clearAllMocks();
+    process.env.DISCORD_TOKEN = 'token';
+    process.env.OPENAI_API_KEY = 'key';
   });
 
   test('initializes discord client', () => {
@@ -83,5 +85,27 @@ describe('index', () => {
     const expectedPath = path.join(__dirname, '..', 'recordings', 'user-1.wav');
     expect(transcribeAudio).toHaveBeenCalledWith(expectedPath);
     expect(reply).toHaveBeenCalledWith('Transcription: text');
+  });
+
+  test('exits if DISCORD_TOKEN is missing', () => {
+    delete process.env.DISCORD_TOKEN;
+    const exit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    require('../index');
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('DISCORD_TOKEN'));
+    expect(exit).toHaveBeenCalledWith(1);
+    exit.mockRestore();
+    error.mockRestore();
+  });
+
+  test('exits if OPENAI_API_KEY is missing', () => {
+    delete process.env.OPENAI_API_KEY;
+    const exit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+    const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+    require('../index');
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('OPENAI_API_KEY'));
+    expect(exit).toHaveBeenCalledWith(1);
+    exit.mockRestore();
+    error.mockRestore();
   });
 });
