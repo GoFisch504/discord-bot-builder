@@ -68,7 +68,6 @@ describe('joinAndRecord', () => {
     fs.existsSync.mockReturnValue(false);
     fs.mkdirSync.mockReturnValue();
     fs.createWriteStream.mockReturnValue({ on: jest.fn() });
-
     const member = { id: '1', user: { bot: false, username: 'user' } };
     const channel = {
       id: 'c1',

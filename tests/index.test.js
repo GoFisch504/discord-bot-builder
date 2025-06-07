@@ -72,17 +72,6 @@ describe('index', () => {
     expect(reply).toHaveBeenCalledWith('Recording started.');
   });
 
-  test('handles !stop command', async () => {
-    require('../index');
-    const handler = onMock.mock.calls.find(c => c[0] === 'messageCreate')[1];
-    const reply = jest.fn();
-    const msg = { content: '!stop', author: { bot: false }, reply, member: {} };
-
-    await handler(msg);
-
-    expect(stopRecording).toHaveBeenCalled();
-    expect(reply).toHaveBeenCalledWith('Recording stopped.');
-  });
 
   test('handles !transcribe command', async () => {
     fs.readdirSync.mockReturnValue(['user-1.wav']);
@@ -95,5 +84,17 @@ describe('index', () => {
     const expectedPath = path.join(__dirname, '..', 'recordings', 'user-1.wav');
     expect(transcribeAudio).toHaveBeenCalledWith(expectedPath);
     expect(reply).toHaveBeenCalledWith('Transcription: text');
+  });
+
+  test('handles !stop command', async () => {
+    require('../index');
+    const handler = onMock.mock.calls.find(c => c[0] === 'messageCreate')[1];
+    const reply = jest.fn();
+    const msg = { content: '!stop', author: { bot: false }, reply, member: {} };
+
+    await handler(msg);
+
+    expect(stopRecording).toHaveBeenCalled();
+    expect(reply).toHaveBeenCalledWith('Recording stopped.');
   });
 });
