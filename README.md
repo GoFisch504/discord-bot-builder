@@ -14,5 +14,10 @@ This project is a simple Discord bot built with Node.js.
    node index.js
    ```
 
-
+## Build
+The CI workflow compiles the bot using webpack. To run the same step locally:
+```sh
+npm run build
+```
+The bundled file is output to the `dist/` directory.
 
