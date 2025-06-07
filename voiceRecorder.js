@@ -1,5 +1,7 @@
 const { joinVoiceChannel, EndBehaviorType } = require('@discordjs/voice');
 
+let activeConnection = null;
+
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('ffmpeg-static');
@@ -8,12 +10,29 @@ if (ffmpegPath) {
 }
 const path = require('path');
 
+function cleanup() {
+  if (activeConnection) {
+    try {
+      activeConnection.destroy();
+    } catch (err) {
+      console.error(err);
+    }
+    activeConnection = null;
+  }
+}
+
 function joinAndRecord(channel) {
+  if (activeConnection) {
+    cleanup();
+  }
+
   const connection = joinVoiceChannel({
     channelId: channel.id,
     guildId: channel.guild.id,
     adapterCreator: channel.guild.voiceAdapterCreator,
   });
+
+  activeConnection = connection;
 
   const receiver = connection.receiver;
 
@@ -42,10 +61,19 @@ function joinAndRecord(channel) {
       .audioChannels(2)
       .format('wav')
       .on('error', console.error)
+      .on('end', cleanup)
       .pipe(writeStream);
+
+    writeStream.on('finish', cleanup);
 
     console.log(`Recording ${member.user.username}...`);
   });
+
+  return connection;
 }
 
-module.exports = { joinAndRecord };
+function stopRecording() {
+  cleanup();
+}
+
+module.exports = { joinAndRecord, stopRecording };

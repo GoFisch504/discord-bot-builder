@@ -25,7 +25,7 @@ jest.mock('@discordjs/voice', () => ({
   EndBehaviorType: { AfterSilence: 'AfterSilence' },
 }));
 
-const { joinAndRecord } = require('../voiceRecorder');
+const { joinAndRecord, stopRecording } = require('../voiceRecorder');
 
 describe('joinAndRecord', () => {
   beforeEach(() => {
@@ -34,11 +34,11 @@ describe('joinAndRecord', () => {
 
   test('joins channel and records non-bot members', () => {
     const subscribe = jest.fn(() => 'stream');
-    joinVoiceChannel.mockReturnValue({ receiver: { subscribe } });
+    joinVoiceChannel.mockReturnValue({ receiver: { subscribe }, destroy: jest.fn() });
 
     fs.existsSync.mockReturnValue(false);
     fs.mkdirSync.mockReturnValue();
-    fs.createWriteStream.mockReturnValue({});
+    fs.createWriteStream.mockReturnValue({ on: jest.fn() });
 
     const member = { id: '1', user: { bot: false, username: 'user' } };
     const channel = {
@@ -58,5 +58,27 @@ describe('joinAndRecord', () => {
       end: { behavior: 'AfterSilence', duration: 1000 },
     });
     expect(ffmpeg).toHaveBeenCalledWith('stream');
+  });
+
+  test('stopRecording destroys connection', () => {
+    const subscribe = jest.fn(() => 'stream');
+    const destroy = jest.fn();
+    joinVoiceChannel.mockReturnValue({ receiver: { subscribe }, destroy });
+
+    fs.existsSync.mockReturnValue(false);
+    fs.mkdirSync.mockReturnValue();
+    fs.createWriteStream.mockReturnValue({ on: jest.fn() });
+
+    const member = { id: '1', user: { bot: false, username: 'user' } };
+    const channel = {
+      id: 'c1',
+      guild: { id: 'g1', voiceAdapterCreator: 'adapter' },
+      members: { forEach: (cb) => cb(member) },
+    };
+
+    joinAndRecord(channel);
+    stopRecording();
+
+    expect(destroy).toHaveBeenCalled();
   });
 });
